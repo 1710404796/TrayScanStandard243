@@ -58,6 +58,14 @@ namespace TrayScanStandard.View
             {
                 CameraTypeCombo.SelectedIndex = 0; // HikVision
             }
+            else if (Setting.CameraAddresses is HuaruiAddress)
+            {
+                CameraTypeCombo.SelectedIndex = 1; // Huarui
+            }
+            else
+            {
+                CameraTypeCombo.SelectedIndex = 0; // Default to HikVision
+            }
             // Add more camera types initialization as needed
         }
         
@@ -79,6 +87,24 @@ namespace TrayScanStandard.View
                     ConnectionValueBox.Text = ipAddress.Value;
                 }
                 else if (hkAddress.ConnectAddress is Camera.Fs.Common.Serial serial)
+                {
+                    ConnectionTypeCombo.SelectedIndex = 2; // Serial
+                    ConnectionValueBox.Text = serial.Value;
+                }
+            }
+            else if (Setting.CameraAddresses is HuaruiAddress hrAddress)
+            {
+                if (hrAddress.ConnectAddress is Camera.Fs.Common.Key key)
+                {
+                    ConnectionTypeCombo.SelectedIndex = 0; // Key
+                    ConnectionValueBox.Text = key.Value;
+                }
+                else if (hrAddress.ConnectAddress is Camera.Fs.Common.IPAddress ipAddress)
+                {
+                    ConnectionTypeCombo.SelectedIndex = 1; // IP
+                    ConnectionValueBox.Text = ipAddress.Value;
+                }
+                else if (hrAddress.ConnectAddress is Camera.Fs.Common.Serial serial)
                 {
                     ConnectionTypeCombo.SelectedIndex = 2; // Serial
                     ConnectionValueBox.Text = serial.Value;
@@ -162,8 +188,13 @@ namespace TrayScanStandard.View
             switch (CameraTypeCombo.SelectedIndex)
             {
                 case 0: // HikVision
-                default:
                     Setting.CameraAddresses = new HKAddress(connectAddress);
+                    break;
+                case 1: // HikVision
+                    Setting.CameraAddresses = new HuaruiAddress(connectAddress);
+                    break;
+
+                default:
                     break;
                 // Add more camera types as needed
             }

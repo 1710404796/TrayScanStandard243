@@ -19,6 +19,9 @@ namespace TrayScanStandard.Apis
         , MainViewModel mainViewModel
         ): ControllerBase
     {
+        //[HttpGet("/CaptureImage")] 北京时代
+        //[HttpPost("/Photo")] 福鼎时代
+        private const string ERROR = "ERROR";
         [HttpGet("/CaptureImage")]
         public async Task<QRCodeResult> Delect()
         {
@@ -30,7 +33,7 @@ namespace TrayScanStandard.Apis
 
             if (MainStorage.SelectBattery is null) return new QRCodeResult() { ErrorCode = ErrorType.SomeResultError };
 
-            var data = await mediator.Send(new DelectCCDCommand(MainStorage.SelectBattery));
+            var data = await mediator.Send(new DetectCCDCommand(MainStorage.SelectBattery));
             GC.Collect();
             data.IfRight(
                 r =>
@@ -88,6 +91,7 @@ namespace TrayScanStandard.Apis
     {
         Successed,
         CameraError,
+        //ERROR,
         SomeResultError,
     }
 

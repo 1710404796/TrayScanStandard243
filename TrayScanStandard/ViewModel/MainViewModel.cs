@@ -96,7 +96,7 @@ namespace TrayScanStandard.ViewModel
                     IsLock = user.Identity.IsAuthenticated ? Visibility.Collapsed : Visibility.Visible;
                     if (user.Identity.IsAuthenticated)
                         Username = $"{user.GetUserName()}({user.GetUserRole()})";
-                    logger.LogInformation("{username} 登陆", Username);
+                    logger.LogInformation("{username} 登录", Username);
                     // 输出切换后用户名称
                     // Console.WriteLine(IsLock);
 

@@ -50,7 +50,7 @@ namespace TrayScanStandard.View
 
         }
         /// <summary>
-        /// 重连
+        /// 相机重连
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

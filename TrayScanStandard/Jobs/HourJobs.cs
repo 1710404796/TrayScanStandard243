@@ -21,24 +21,40 @@ namespace TrayScanStandard.Jobs
 
 
             var files = new DirectoryInfo("Data2D").GetFiles().OrderByDescending(s => s.CreationTime).ToArray();
-
             
-
-            foreach (var file in files.Skip(500))
+            for (int i = 0; i < files.Length; i++)
             {
-                File.Delete(file.FullName);
+                var file = files[i];
 
-            }
-            foreach (var file in files.Take(500))
-            {
-                if (DateTime.Now - file.CreationTime > TimeSpan.FromDays(MainStorage.Saves.LogDeleteDay))
+                // 超过保留天数
+                bool isTooOld = DateTime.Now - file.CreationTime > TimeSpan.FromDays(MainStorage.Saves.LogDeleteDay);
+
+                // 排名500以后
+                bool isBeyondCountLimit = i >= 500;
+
+                // 满足任一条件就删除
+                if (isTooOld || isBeyondCountLimit)
                 {
                     File.Delete(file.FullName);
                 }
             }
 
 
-           var dirs = new DirectoryInfo("DataFrame").GetDirectories().OrderByDescending(s => s.CreationTime).ToArray();
+            //foreach (var file in files.Skip(50))
+            //{
+            //    File.Delete(file.FullName);
+
+            //}
+            //foreach (var file in files.Take(50))
+            //{
+            //    if (DateTime.Now - file.CreationTime > TimeSpan.FromDays(MainStorage.Saves.LogDeleteDay))
+            //    {
+            //        File.Delete(file.FullName);
+            //    }
+            //}
+
+
+            var dirs = new DirectoryInfo("DataFrame").GetDirectories().OrderByDescending(s => s.CreationTime).ToArray();
             foreach (var dir in dirs.Skip(500))
             {
              

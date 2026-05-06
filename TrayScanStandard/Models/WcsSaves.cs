@@ -32,6 +32,8 @@ namespace TrayScanStandard.Models
             set;
         }
 
+        public string TrayScanStandardName { get; set; }= "整盘扫码";
+
         public XYLStage? Stage { get; set; } = null;
         public bool TwoOk { get; set; } = false;
         //public PLCCpuType PLCCpuType { get; set; } = PLCCpuType.小端;

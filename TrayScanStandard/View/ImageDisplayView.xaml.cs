@@ -46,7 +46,7 @@ namespace TrayScanStandard.View
             }
 
             btn.IsEnabled = false;
-            var res = await _meditor.Send(new DelectCCDCommand(ViewModel.SelectBatteryInfo));
+            var res = await _meditor.Send(new DetectCCDCommand(ViewModel.SelectBatteryInfo));
 
             await res.MatchAsync(
 

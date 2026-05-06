@@ -57,7 +57,6 @@ namespace TrayScanStandard.ViewModel.CZPallet
         {
             StringBuilder sb = new(1000);
             string[] titles = ["托盘编号", "组盘时间", "电池数量", "电池条码"];
-
             sb.AppendLine(string.Join(",", titles));
 
             foreach (var log in PalletLogs.Where(s => s.IsSelect))

@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	  <SatelliteResourceLanguages>zh-Hans</SatelliteResourceLanguages>
 	  <Platforms>AnyCPU;x64</Platforms>
+	  <ApplicationIcon>catl.ico</ApplicationIcon>
 
   </PropertyGroup>
 
@@ -23,6 +24,10 @@
     <None Remove="Images\catl.png" />
     <None Remove="Images\catl1.png" />
     <None Remove="Images\linx.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="catl.ico" />
   </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -121,6 +126,12 @@
 	  <None Update="Properties\Settings.settings">
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
+	  <None Update="start.bat">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="start.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
 	  <None Update="test.sol">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>

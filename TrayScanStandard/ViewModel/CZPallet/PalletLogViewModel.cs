@@ -52,7 +52,8 @@ namespace TrayScanStandard.ViewModel.CZPallet
 
             foreach (var log in PalletLogs)
             {
-                sb.AppendLine($"{log.PalletCode},{log.ZuPanTime},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
+                //sb.AppendLine($"{log.PalletCode},{log.ZuPanTime},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
+                sb.AppendLine($"{log.PalletCode},{log.ZuPanTime.ToString("yyyy-MM-dd HH:mm:ss")},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
 
             }
 
@@ -71,7 +72,8 @@ namespace TrayScanStandard.ViewModel.CZPallet
 
             foreach (var log in PalletLogs.Where(s => s.IsSelect))
             {
-                sb.AppendLine($"{log.PalletCode},{log.ZuPanTime},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
+                //sb.AppendLine($"{log.PalletCode},{log.ZuPanTime},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
+                sb.AppendLine($"{log.PalletCode},{log.ZuPanTime.ToString("yyyy-MM-dd HH:mm:ss")},{log.ChannelCount},[{string.Join("|", log.BatteryInfo.Select(s => s.BatteryCode))}]");
 
             }
 

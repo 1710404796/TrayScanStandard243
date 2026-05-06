@@ -22,23 +22,27 @@ using VMWebAIClient;
 
 namespace TrayScanStandard.Mediator.Handlers
 {
-    internal class DelectCCDCommandHander(ScanCameraService scanCameraService, ILogger<ScanCameraService> logger, IMediator mediator
-        , IVMWebAIClient vMWebAIClient,
-        ImageDisplayViewModel imageDisplayViewModel
-        )
-        : IRequestHandler<DelectCCDCommand, Either<string, DetectResult>>
+    internal class DetectCCDCommandHander
+        (ScanCameraService scanCameraService, 
+        ILogger<ScanCameraService> logger, 
+        IMediator mediator,
+        IVMWebAIClient vMWebAIClient,
+        ImageDisplayViewModel imageDisplayViewModel): IRequestHandler<DetectCCDCommand, Either<string, DetectResult>>
     // 这个就是默认全部的
     {
-        public async Task<Either<string, DetectResult>> Handle(DelectCCDCommand request, CancellationToken cancellationToken)
+        public async Task<Either<string, DetectResult>> Handle(DetectCCDCommand request, CancellationToken cancellationToken)
         {
 
             if (request.BatteryTypeInfo == null)
             {
                 return Either<string, DetectResult>.Left("电池信息为空");
             }
-            var captureInfos = scanCameraService.MugenCameras
-                .Zip(scanCameraService.Image2DViewModels.Select(s => s.CameraSetting))
-                .Map(s => s.Item1.Map(c => new CaptureInfo(c, s.Item2.Exposure))).ToArray();
+            var captureInfos = scanCameraService.MugenCameras       // 相机设备列表       Zip:数据配对
+                .Zip(scanCameraService.Image2DViewModels.Select(s => s.CameraSetting))          // 从Image2DViewModels提取CameraSetting,生成结果(MugenCameras,CameraSetting)元组序列
+                .Map(s => s.Item1.Map(c => new CaptureInfo(c, s.Item2.Exposure))).ToArray();    // 外层的Map对每个配对的元组进行转换，内层的s.Iteml.Map对单个相机设备进行转换
+                                                                                                // 为每个相机设备创建CaptureInfo对象，传入相机设备（c）和对应的曝光设置数组（s.Item2.Exposure）
+
+            // 执行拍照命令
             var data = await mediator.Send(new CamCaptureCommand(captureInfos));
             Console.WriteLine("testData");
 
@@ -52,8 +56,8 @@ namespace TrayScanStandard.Mediator.Handlers
 
             var dataFilenames = data.Map((IEnumerable<Image2DResult[]> d) =>
                                         d.Map(
-                                            (ci, s) =>
-                                                s.Map((ei, s1) =>
+                                            (ci, s) =>         // ci-Camera Index相机索引代表第几个相机，s是该相机的多张图片
+                                                s.Map((ei, s1) =>       // ei-Exposure Index 曝光索引代表第几次曝光索引，s1是单张图片
                                                 {
                                                     var name = $"{FilenameHelper.AppPath}Data2D\\{FilenameHelper.FileName}_{ci}_{ei}.png";
                                                     File.WriteAllBytes(name, s1.Data);
@@ -91,6 +95,7 @@ namespace TrayScanStandard.Mediator.Handlers
                                 .Map(s =>
                                 {
                                     logger.LogInformation("检测{idx}图片", s.s);
+                                    // 解析二维码
                                     return vMWebAIClient.DetectCodesV1Async(s.s, s.Item2);
                                 })
                                 .TraverseSerial(s => s)

@@ -5,6 +5,7 @@
   </Configurations>
   <Project Path="lxuv/Camera.Fs.Common/Camera.Fs.Common.csproj" />
   <Project Path="lxuv/HKCamera.Fs.NET/HKCamera.Fs.NET.csproj" />
+  <Project Path="lxuv/HuaRui.Fs.NET/HuaRui.Fs.NET.csproj" />
   <Project Path="lxuv/LinxUniverse.Algo.Common/LinxUniverse.Algo.Common.csproj" />
   <Project Path="lxuv/LinxUniverse.Auth/LinxUniverse.Auth.csproj" />
   <Project Path="lxuv/LinxUniverse.Common/LinxUniverse.Common.fsproj" />

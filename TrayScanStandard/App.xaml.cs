@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Quartz;
 using Serilog;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -66,6 +67,11 @@ namespace TrayScanStandard
                 Application.Current.Shutdown();
                 return;
             }
+
+
+            //Bitmap bitmap = new Bitmap(@"D:\testImg\20250911202510-800_0_0.png");
+            //Bitmap bitmap1 = new Bitmap(@"D:\testImg\right.png");
+            //Bitmap bitmap2 = new Bitmap(@"D:\testImg\20251217195709-132_0_0.png");
             MainStorage.Init();
             //if (MainStorage.Saves.Stage == null)
             //{

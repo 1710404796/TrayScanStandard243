@@ -19,13 +19,16 @@ namespace TrayScanStandard.Mediator.Handlers
     {
         public Task<Either<string, IEnumerable<Image2DResult[]>>> Handle(CamCaptureCommand request, CancellationToken cancellationToken)
         {
+
+
+
             //var a = request.CaptureInfos.Select(s => 1);
             if (!MainStorage.Saves.CameraEnable)
             {
                 return Either<string, IEnumerable<Image2DResult[]>>.Right
                ([..request.CaptureInfos
                .Select((s, i) => new Image2DResult[]
-                       { 
+                       {
                            new Image2DResult(File.ReadAllBytes( @$"testImg\{i}.png"))
                            //new Image2DResult(File.ReadAllBytes( @$"C:\Users\admin\Pictures\20211110085254_736a4.jpeg"))
                        }
@@ -37,21 +40,35 @@ namespace TrayScanStandard.Mediator.Handlers
                 () => request.CaptureInfos
                     .Map(s => s.ToEither("相机未初始化"))
                     .Traverse(s => s)
-                    .BindAsync(c =>
+                    .Bind(c =>
+                    //.BindAsync(c =>
                         c
-                        // .AsParallel()
+                        //.AsParallel()    //华睿相机并行拍照会有问题，暂时不使用
                         // .AsOrdered()
-                        .Select(s => Task.Run(() => ProcessCaptureInfo(s)))
-                        .Apply(Task.WhenAll)
-                        .Map(s => s.Traverse(q => q))
+
+
+                        //.Select(s => Task.Run(() => ProcessCaptureInfo(s)))
+                        //.Apply(Task.WhenAll)
+                        //.Map(s => s.Traverse(q => q))
+
+                        //.Select(s => new Func<Either<string, Image2DResult[]>>(() => ProcessCaptureInfo(s)))
+                        //.Map(s => s.Invoke())
+                        .Select(ProcessCaptureInfo)
+                        .Traverse(s => s)
+
+
+                        //.Select(ProcessCaptureInfo)
+                        //.Traverse(s =>s)
+                        )
                     //.TraverseParallel(s => s)
                     )
-                );//.Apply(Task.FromResult);
+                .Apply(Task.FromResult)
+                ;
 
             // 本地函数：处理单个CaptureInfo
             Either<string, Image2DResult[]> ProcessCaptureInfo(CaptureInfo s)
             {
-                var aa = s.Exps.Map(e => 
+                var aa = s.Exps.Map(e =>
                         s.Camera
                         .SetControl(new AcquisitionControl { ExposureTime = e })
                         .Bind(DetectUtil.CaptureOne)

@@ -39,6 +39,11 @@ namespace TrayScanStandard.View
             GTran.ScaleY = 0.5;
         }
 
+        /// <summary>
+        /// 放大缩小
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.MiddleButton == MouseButtonState.Pressed || ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
@@ -56,6 +61,11 @@ namespace TrayScanStandard.View
             }
         }
 
+        /// <summary>
+        /// 鼠标右键按下
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var grid = sender as Grid;
@@ -68,6 +78,11 @@ namespace TrayScanStandard.View
             }
         }
 
+        /// <summary>
+        /// 鼠标右键松开
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             var grid = sender as Grid;
@@ -79,6 +94,11 @@ namespace TrayScanStandard.View
             }
         }
 
+        /// <summary>
+        /// 鼠标移动
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             if (_isDragging && e.RightButton == MouseButtonState.Pressed)

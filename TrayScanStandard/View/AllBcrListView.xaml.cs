@@ -28,7 +28,7 @@ namespace TrayScanStandard.View
     /// <summary>
     /// AllBcrListView.xaml 的交互逻辑
     /// </summary>
-    [PowerView(PowerEnum.相机列表)]
+    //[PowerView(PowerEnum.相机列表)]
     public partial class AllBcrListView : Page
     {
         List<BcrBorder> _borderList = [];
@@ -282,7 +282,7 @@ namespace TrayScanStandard.View
 
             try
             {
-                var res = await meditor.Send(new DelectCCDCommand(MainStorage.SelectBattery));
+                var res = await meditor.Send(new DetectCCDCommand(MainStorage.SelectBattery));
                 logger.LogInformation("结果: {0}", res);
 
                 res.Match(
@@ -333,7 +333,7 @@ namespace TrayScanStandard.View
                 {
                     try
                     {
-                        var res = await meditor.Send(new DelectCCDCommand(MainStorage.SelectBattery));
+                        var res = await meditor.Send(new DetectCCDCommand(MainStorage.SelectBattery));
                         UpdateRatio();
                     }
                     catch (Exception ex)

@@ -8,6 +8,7 @@
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
+        WindowStartupLocation="CenterScreen"
         Title="权限设定页面" SizeToContent="Height" Width="700"
         Loaded="PowerSettingWindows_OnLoaded"
         >
