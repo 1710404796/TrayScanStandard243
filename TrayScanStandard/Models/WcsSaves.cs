@@ -79,7 +79,7 @@ namespace TrayScanStandard.Models
         public bool IsAlgoEnable { get; set; } = true;
     }
 
-    public record LightInfo(string Com, int[] Values);
+    public record LightInfo(string Com, int[] Values, LightType Type = LightType.Cognex);
     public record CameraSetting(
 
         )

@@ -14,6 +14,7 @@ using System.Windows;
 using TrayScanStandard.Attritubes;
 using TrayScanStandard.Data;
 using TrayScanStandard.Mediator.Commands;
+using TrayScanStandard.Models.CZPallet;
 using TrayScanStandard.Service;
 using VMWebAIClient;
 
@@ -72,8 +73,25 @@ namespace TrayScanStandard.Mediator.Handlers
             MainStorage.CST = await MainStorage.Saves.LightInfos.Map(
                 async s =>
                 {
-                    Enum.TryParse<SerialPortType>(s.Com, out var com);
-                    var g = await mediator.Send(new CreateCSTLightCommand(Com: com));
+                    if (!Enum.TryParse<SerialPortType>(s.Com, true, out var com))
+                    {
+                        throw new Exception($"光源地址 '{s.Com}' 不是有效的 COM 端口（支持 COM1-COM8）");
+                    }
+
+                    // 根据光源类型选择底层驱动：
+                    // Cognex -> CSTControllerDll
+                    // Wordop -> 串口 ASCII 协议
+                    var controllerType = s.Type == LightType.Wordop
+                        ? LightControllerType.Wordop
+                        : LightControllerType.Cognex;
+
+                    // Wordop: 19200, Cognex: 9600
+                    var baudRate = s.Type == LightType.Wordop ? 19200 : 9600;
+
+                    var g = await mediator.Send(new CreateCSTLightCommand(
+                        Com: com,
+                        ControllerType: controllerType,
+                        BaudRate: baudRate));
                     return await mediator.Send(new GetLightQuery(g));
                 }).TraverseSerial(s => s!);
             //var sol= CodeDetectExtensions
