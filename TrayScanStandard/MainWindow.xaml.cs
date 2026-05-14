@@ -23,7 +23,7 @@ using VMWebAIClient;
 namespace TrayScanStandard
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// 主窗口的交互逻辑。XAML
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -35,7 +35,9 @@ namespace TrayScanStandard
 
         public MainWindow()
         {
+            // 读盘恢复配置，没有文件就用默认配置
             MainStorage.SaveManager.Load();
+
             ChangeLanguage();
 
             DataContext = this;
@@ -66,6 +68,11 @@ namespace TrayScanStandard
         //{
         //    (App.Current.MainWindow as MainWindow)!.ContentFrame.Content = App.GetService<T>();
         //}
+
+        /// <summary>
+        /// 导航到指定页面
+        /// </summary>
+        /// <param name="frameworkElement"></param>
         public static async void NageTo(FrameworkElement frameworkElement)
         {
             var mediator1 = App.GetService<IMediator>();
@@ -86,8 +93,8 @@ namespace TrayScanStandard
                     return;
                 }
             }
-            
-            // Dispose of the previous content to prevent memory leaks
+
+            // 删除先前的内容以防止内存泄漏
             DisposeCurrentContent(mainWindow);
             mainWindow.ContentFrame.Content = frameworkElement;
         }
@@ -115,16 +122,16 @@ namespace TrayScanStandard
             
             if (mainWindow.ContentFrame.Content is not T)
             {
-                // Dispose of the previous content to prevent memory leaks
+                // 删除先前的内容以防止内存泄漏
                 DisposeCurrentContent(mainWindow);
                 mainWindow.ContentFrame.Content = App.GetService<T>();
             }
         }
 
         /// <summary>
-        /// Helper method to properly dispose of current content to prevent memory leaks
+        /// 辅助方法，用于正确处理当前内容以防止内存泄漏
         /// </summary>
-        /// <param name="mainWindow">The main window instance</param>
+        /// <param name="mainWindow">主窗口实例</param>
         private static void DisposeCurrentContent(MainWindow mainWindow)
         {
             if (mainWindow.ContentFrame.Content is IDisposable disposableContent)
@@ -133,7 +140,7 @@ namespace TrayScanStandard
             }
             else if (mainWindow.ContentFrame.Content is FrameworkElement element)
             {
-                // Clear data context and bindings for non-disposable elements
+                // 为非一次性元素清除数据上下文和绑定
                 BindingOperations.ClearAllBindings(element);
                 element.DataContext = null;
             }
@@ -158,11 +165,11 @@ namespace TrayScanStandard
         }
         private void Window_Closed(object sender, EventArgs e)
         {
-            // Cleanup ViewModel resources
+            // 清理虚拟机资源
             ViewModel.Cleanup();
             ViewModel.CacheService.Cancel();
 
-            // Dispose current content to prevent memory leaks
+            // 释放当前内容以防止内存泄漏
             DisposeCurrentContent(this);
 
             MainStorage.SaveManager.Save();

@@ -17,6 +17,9 @@ namespace TrayScanStandard
         public static SaveManager<WcsSaves> SaveManager = new();
         public static WcsSaves Saves => SaveManager.SaveFile;
 
+        /// <summary>
+        /// 启用WCS功能，启用后会显示相关UI并允许使用WCS功能
+        /// </summary>
         public static bool IsWcsEnable { get; set; }
         public static Either<string, CodeDetecter> Algo { get; set; }
         public static Either<string, CodeDetecter> AlgoCnn { get; set; }
@@ -28,6 +31,7 @@ namespace TrayScanStandard
 
         public static void Init()
         {
+            // 读盘恢复配置，没有文件就用默认配置
             SaveManager.Load();
 
         }

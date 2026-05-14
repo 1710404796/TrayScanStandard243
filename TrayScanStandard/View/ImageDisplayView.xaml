@@ -82,7 +82,7 @@
 
             <StackPanel Margin="5">
                 <ComboBox Width="150"
-                          SelectionChanged="ComboBox_SelectionChanged_1"
+                          SelectionChanged="ComboBox_SelectionChanged"
                           SelectedItem="{Binding ViewModel.SelectBatteryInfo}"
                           ItemsSource="{Binding ViewModel.BatteryInfos}">
                     <ComboBox.ItemTemplate>

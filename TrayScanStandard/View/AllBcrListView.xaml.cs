@@ -240,6 +240,10 @@ namespace TrayScanStandard.View
             //Ratio.Text = $"{Properties.Resources.NumberOfSuccessfulAttempts}: {MainStorage.Saves.OkCnt} {Properties.Resources.TotalNumberOfTimes}: {MainStorage.Saves.ScanCnt} {Properties.Resources.SuccessRate}: {MainStorage.Saves.OkCnt * 1.0 / MainStorage.Saves.ScanCnt:P}";
         }
 
+        /// <summary>
+        /// 双击鼠标进入对应的相机界面
+        /// </summary>
+        /// <param name="idx"></param>
         private void Bborder_MouseDoubleClick(int idx)
         {
             // 双击事件，只有在非拖拽状态下才触发
@@ -276,12 +280,18 @@ namespace TrayScanStandard.View
             GC.WaitForPendingFinalizers();
         }
 
+        /// <summary>
+        /// 全部相机拍照入口
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void AllCapture_Click(object sender, RoutedEventArgs e)
         {
             (sender as Button)!.IsEnabled = false;
 
             try
             {
+                // 发送检测命令，获取结果
                 var res = await meditor.Send(new DetectCCDCommand(MainStorage.SelectBattery));
                 logger.LogInformation("结果: {0}", res);
 

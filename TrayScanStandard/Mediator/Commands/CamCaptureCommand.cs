@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace TrayScanStandard.Mediator.Commands
 {
+    /// <summary>
+    /// 拍照信息记录
+    /// </summary>
+    /// <param name="Camera">相机对象</param>
+    /// <param name="Exps">曝光参数数组</param>
     public record CaptureInfo( 
         MugenCamera.MugenCamera Camera
         , int[] Exps

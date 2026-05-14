@@ -80,7 +80,7 @@ namespace TrayScanStandard
             //}
             //DB.Database.Migrate();
             Host = Microsoft.Extensions.Hosting.Host.
-                     CreateDefaultBuilder().
+                     CreateDefaultBuilder().        // 加载配置文件和设置默认值
                      UseContentRoot(AppContext.BaseDirectory).
                      ConfigureServices((context, services) =>
                      {
@@ -110,7 +110,8 @@ namespace TrayScanStandard
                              config.WaitForJobsToComplete = true;
                          });
 
-                         services.AddSingleton<LinxAuthenticationStateProvider, StandLinxAuthenticationStateProvider<LinxUser>>();
+                         //services.AddSingleton<LinxAuthenticationStateProvider, StandLinxAuthenticationStateProvider<LinxUser>>();
+                         services.AddSingleton<LinxAuthenticationStateProvider, TrayScanAuthenticationStateProvider>();
 
                          services.AddAuth<LinxUser>();
 

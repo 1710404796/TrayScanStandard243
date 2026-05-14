@@ -49,18 +49,52 @@ namespace TrayScanStandard.View
             if ( new BcrSettingWindow(ViewModel.BcrInfo).ShowDialog()??false) MainStorage.SaveManager.Save();
 
         }
+
         /// <summary>
-        /// 相机重连
+        /// 重连
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+            var button = sender as Button;
+            if (button != null)
+            { 
+                button.IsEnabled = false;
+            }
+
+            try 
+            { 
+                var imageVm = ViewModel.Image2DViewModel;
+                int cameraIdx = imageVm.CameraIdx;
+
+                // 调用重连方法并处理结果
+                var result = imageVm.Service.ReconnectCamera(cameraIdx);
+                result.Match(
+                    success =>
+                    {
+                        MessageBox.Show($"重连{cameraIdx}成功");
+                        return 0;
+                    },
+                    failure =>
+                    {
+                        MessageBox.Show($"重连{cameraIdx}失败: {failure}");
+                        return 0;
+                    });
+            }
+            finally
+            {
+                if (button != null)
+                {
+                    button.IsEnabled = true;
+                }
+            }
+
         }
 
         public void Dispose()
         {
-            // Remove child element and call disposal if Image2DView implements IDisposable
+            // 如果 Image2DView 实现了 IDisposable，则移除子元素并调用 disposal 方法。
             if (camview.Child is IDisposable disposableView)
             {
                 disposableView.Dispose();

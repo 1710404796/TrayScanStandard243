@@ -38,7 +38,7 @@ namespace TrayScanStandard.ViewModel
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLoading))]
-        // 標準化一下
+        // 标准化一下
         private bool _isWcsEnable = false;
         private Thread _someThread;
         private volatile bool _shouldStopThread = false;
@@ -77,6 +77,7 @@ namespace TrayScanStandard.ViewModel
             Task.Run(async () =>
             {
 
+                // 初始化命令
                 await mediator.Send(new InitMeCommand());
                 //await Task.WhenAll(mediator.Send(new ChangeCstAllCommand(30)));
 
@@ -84,7 +85,6 @@ namespace TrayScanStandard.ViewModel
                 Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 // 考虑这个位置
 
-                ;
 
             }).ContinueWith(_ => MainStorage.IsWcsEnable = IsWcsEnable = true);
             authenticationStateProvider.AuthenticationStateChanged += task =>
@@ -127,19 +127,18 @@ namespace TrayScanStandard.ViewModel
         }
 
         /// <summary>
-        /// Cleanup method to stop background thread and prevent memory leaks
+        /// 用于停止后台线程并防止内存泄漏的清理方法
         /// </summary>
         public void Cleanup()
         {
             _shouldStopThread = true;
-            
-            // Give the thread a moment to finish gracefully
+
             if (_someThread != null && _someThread.IsAlive)
             {
                 if (!_someThread.Join(TimeSpan.FromSeconds(2)))
                 {
-                    // Log warning if thread doesn't stop gracefully
-                    Logger?.LogWarning("Background thread did not stop gracefully within timeout");
+                    // 如果线程未能优雅停止，则显示日志警告。
+                    Logger?.LogWarning("后台线程在超时后未正常终止");
                 }
             }
 

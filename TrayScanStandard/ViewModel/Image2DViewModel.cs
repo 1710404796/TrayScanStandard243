@@ -43,7 +43,14 @@ namespace TrayScanStandard.ViewModel
         public string[] Codes { get; set; } = Enumerable.Repeat("", 128).ToArray();
         //public ObservableCollection<Brush> Colors { get; set; } = new(new Brush[128]);
 
+        /// <summary>
+        /// 颜色更新事件，通知界面更新颜色显示
+        /// </summary>
         public event Action ColorUpdate;
+
+        /// <summary>
+        /// 结果更新事件，通知界面更新结果显示
+        /// </summary>
         public event Action ResultUpdate;
 
 
@@ -126,9 +133,7 @@ namespace TrayScanStandard.ViewModel
         //{
         //    get; set;
         //}
-        public required
-            ScanCameraService
-            Service { get; init; }
+        public required ScanCameraService Service { get; init; }
 
 
         public Image2DViewModel()
@@ -160,7 +165,14 @@ namespace TrayScanStandard.ViewModel
         [ObservableProperty]
         private string _ratioText = string.Empty;
 
+        /// <summary>
+        /// 修改颜色
+        /// </summary>
         public void Update() => ColorUpdate?.Invoke();
+
+        /// <summary>
+        /// 结果更新
+        /// </summary>
         public void UpdateResult() => ResultUpdate?.Invoke();
 
         public CancellationTokenSource Cts
@@ -294,7 +306,9 @@ namespace TrayScanStandard.ViewModel
             SelectBattery.Regions[CameraIdx - 1] = sorted;
             LinxContext.SaveChanges();
             Update();
-        }        [RelayCommand]
+        }        
+        
+        [RelayCommand]
         public async Task AutoROI()
         {
             if (SelectBattery == null)
@@ -355,6 +369,7 @@ namespace TrayScanStandard.ViewModel
 
                 );
 
+            #region
             //if (SelectBattery == null)
             //{
             //    MessageBox.Show("未选择托盘类型");
@@ -438,6 +453,7 @@ namespace TrayScanStandard.ViewModel
 
             // 撕烤一下更新
 
+            #endregion
             Update();
         }
 

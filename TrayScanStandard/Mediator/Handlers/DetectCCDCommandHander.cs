@@ -37,12 +37,12 @@ namespace TrayScanStandard.Mediator.Handlers
             {
                 return Either<string, DetectResult>.Left("电池信息为空");
             }
-            var captureInfos = scanCameraService.MugenCameras       // 相机设备列表       Zip:数据配对
+            var captureInfos = scanCameraService.MugenCameras       // 将“相机对象”和“每路曝光参数”打包     Zip:数据配对
                 .Zip(scanCameraService.Image2DViewModels.Select(s => s.CameraSetting))          // 从Image2DViewModels提取CameraSetting,生成结果(MugenCameras,CameraSetting)元组序列
                 .Map(s => s.Item1.Map(c => new CaptureInfo(c, s.Item2.Exposure))).ToArray();    // 外层的Map对每个配对的元组进行转换，内层的s.Iteml.Map对单个相机设备进行转换
                                                                                                 // 为每个相机设备创建CaptureInfo对象，传入相机设备（c）和对应的曝光设置数组（s.Item2.Exposure）
 
-            // 执行拍照命令
+            // 执行拍照命令获取图片数据
             var data = await mediator.Send(new CamCaptureCommand(captureInfos));
             Console.WriteLine("testData");
 
@@ -83,7 +83,7 @@ namespace TrayScanStandard.Mediator.Handlers
             var res = (await dataFilenames.BindAsync(
                     camImgs =>
                         camImgs
-                        .Zip(request.BatteryTypeInfo.Regions.Take(MainStorage.Saves.CameraCnt))
+                        .Zip(request.BatteryTypeInfo.Regions.Take(MainStorage.Saves.CameraCount))
                         .Map(
                             imgs => imgs.Item1
                                 .Map(s =>
@@ -121,6 +121,7 @@ namespace TrayScanStandard.Mediator.Handlers
                     s.Zip(scanCameraService.Image2DViewModels)
                     .Iter(d =>
                     {
+                        // 更新每路相机 UI 临时结果
                         d.Item2.TempResult = new CodeDetectResult(d.Item1.ToArr());
                     })
             );
@@ -178,6 +179,8 @@ namespace TrayScanStandard.Mediator.Handlers
 
                         // 创建数据帧
                         var dataFrame = new DataFrame(camImages, request.BatteryTypeInfo, codeInfos);
+
+                        // 保存数据帧
                         await mediator.Send(new SaveDataFrameCommand(dataFrame));
 
                     }

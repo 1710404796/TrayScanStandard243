@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LinxUniverse.CST;
 using System;
@@ -51,8 +51,7 @@ namespace TrayScanStandard.ViewModel
         [ObservableProperty]
         private ObservableCollection<LightType> _lightTypes = new ObservableCollection<LightType>();    // 可选光源类型列表
 
-        // 构造函数 - 假设 WcsSaves 是通过依赖注入（DI）注入或静态获取的
-        // 根据您实际的依赖注入配置进行调整
+        // 根据依赖注入配置进行调整
         public LightManagerViewModel()
         {
             LightInfos = new ObservableCollection<LightInfoViewModel>(
@@ -195,6 +194,7 @@ namespace TrayScanStandard.ViewModel
                 // 更新所选项目
                 SelectedLightInfo.Com = address;
                 SelectedLightInfo.Values = values;
+                SelectedLightInfo.Type = LightManagerType; // 兼容无单独编辑UI：用当前下拉类型更新所选光源类型
                 var a = SelectedLightInfo;
                 // 强制刷新更新后的项目用户界面
                 var index = LightInfos.IndexOf(SelectedLightInfo);
@@ -231,6 +231,7 @@ namespace TrayScanStandard.ViewModel
                 // 加载所选灯光的数值至编辑字段
                 EditComPort = value.Com;
                 EditValuesString = value.ValuesString;
+                LightManagerType = value.Type; // 选择行时同步下拉类型，避免误以为类型未生效
             }
         }
         

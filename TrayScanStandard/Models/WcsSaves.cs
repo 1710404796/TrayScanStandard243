@@ -53,9 +53,15 @@ namespace TrayScanStandard.Models
 
         public ApiEnableTable ApiEnableTable { get; set; } = new();
 
+        /// <summary>
+        /// 相机连接地址
+        /// </summary>
         public CameraSetting[] ConnectAddresses { get; set; } = Enumerable.Range(0,32).Select(s => new CameraSetting()).ToArray();
 
-        public int CameraCnt { get; set; } = 1;
+        /// <summary>
+        /// 相机总数
+        /// </summary>
+        public int CameraCount { get; set; } = 1;
 
         //public Dictionary<string, string> ApiUrlTable { get; set; } = new();
 
@@ -68,8 +74,13 @@ namespace TrayScanStandard.Models
         /// <summary>
         /// 工位设置 // 防止有多工位的
         /// </summary>
-        public StageSetting StageSetting { get; set; } = new();        public int SelectBatteryId { get; set; } = 0;
+        public StageSetting StageSetting { get; set; } = new();        
+        public int SelectBatteryId { get; set; } = 0;
         public LightInfo[] LightInfos { get; set; } = [];
+
+        /// <summary>
+        /// 拍照命令是否真的走物理相机
+        /// </summary>
         public bool CameraEnable { get; set; } = false;
         
         /// <summary>
@@ -79,13 +90,32 @@ namespace TrayScanStandard.Models
         public bool IsAlgoEnable { get; set; } = true;
     }
 
+    /// <summary>
+    /// 光源信息
+    /// </summary>
+    /// <param name="Com">串口</param>
+    /// <param name="Values">亮度值</param>
+    /// <param name="Type">光源类型</param>
     public record LightInfo(string Com, int[] Values, LightType Type = LightType.Cognex);
-    public record CameraSetting(
 
-        )
+    /// <summary>
+    /// 相机设置
+    /// </summary>
+    public record CameraSetting()
     {
+        /// <summary>
+        /// 相机地址Key
+        /// </summary>
         public CameraAddress CameraAddresses { get; set; } = new HKAddress(new Key(""));
+
+        /// <summary>
+        /// 曝光
+        /// </summary>
         public int[] Exposure { get; set; } = Enumerable.Range(0, 3).Select(s => 100).ToArray();
+
+        /// <summary>
+        /// 备份曝光
+        /// </summary>
         public int[] ExposureBackup { get; set; } = Enumerable.Range(0, 3).Select(s => 100).ToArray();
         //public static CameraSetting CreateDefault() =>
         //    new CameraSetting(

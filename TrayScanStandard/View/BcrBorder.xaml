@@ -48,11 +48,11 @@
                     <Button Click="Reset_Click" Width="100"
                          Name="Reset"
                          HorizontalAlignment="Center"
-                        Content="{x:Static lang:Resources.Reconnect}"
+                        Content="重连"
                  ></Button>
                     <Button Click="Button_Click" Width="100"
                          HorizontalAlignment="Center"
-                            Content="{x:Static lang:Resources.SetUp}"
+                            Content="设置"
                  ></Button>
                 </StackPanel>
 

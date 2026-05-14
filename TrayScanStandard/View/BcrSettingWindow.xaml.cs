@@ -22,7 +22,7 @@ using MugenCamera;
 namespace TrayScanStandard.View
 {
     /// <summary>
-    /// BcrSettingWindow.xaml 的交互逻辑
+    /// 相机设置窗口 的交互逻辑
     /// </summary>
     public partial class BcrSettingWindow : Window
     {
@@ -34,26 +34,26 @@ namespace TrayScanStandard.View
             mediator = App.GetService<IMediator>();
             Setting = setting;
             InitializeComponent();
-            
-            // Initialize camera type
+
+            // 重置相机类型
             InitializeCameraTypeSelection();
-            
-            // Initialize connection settings
+
+            // 初始化连接设置
             InitializeConnectionSettings();
-            
-            // Initialize exposure values
+
+            // 初始化曝光值
             ExpPattern.Text = string.Join("\n", Setting.Exposure);
-            
-            // Initialize backup exposure values
+
+            // 初始化备份曝光值
             ExpBackupPattern.Text = string.Join("\n", Setting.ExposureBackup);
         }
-        
+
         /// <summary>
-        /// Initialize the camera type dropdown based on the current setting
+        /// 根据当前设置初始化相机类型下拉菜单
         /// </summary>
         private void InitializeCameraTypeSelection()
         {
-            // Default to HikVision if it's the current type
+            // 若当前类型为 HikVision，则默认使用 HikVision。
             if (Setting.CameraAddresses is HKAddress)
             {
                 CameraTypeCombo.SelectedIndex = 0; // HikVision
@@ -66,11 +66,11 @@ namespace TrayScanStandard.View
             {
                 CameraTypeCombo.SelectedIndex = 0; // Default to HikVision
             }
-            // Add more camera types initialization as needed
+            // 根据需要添加更多相机类型的初始化。
         }
-        
+
         /// <summary>
-        /// Initialize the connection type and value based on the current setting
+        /// 根据当前设置初始化连接类型和值
         /// </summary>
         private void InitializeConnectionSettings()
         {
@@ -111,42 +111,42 @@ namespace TrayScanStandard.View
                 }
             }
         }
-        
+
         /// <summary>
-        /// Handle camera type selection change
+        /// 相机类型选择更改
         /// </summary>
         private void CameraType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Currently we only support HikVision, but this can be expanded in the future
+            // 目前我们仅支持HikVision，但未来可扩展支持更多品牌。
         }
-        
+
         /// <summary>
-        /// Handle connection type selection change
+        /// 处理连接类型选择变更
         /// </summary>
         private void ConnectionType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // You can add specific logic based on connection type if needed
-            // For example, showing different UI elements or validation rules
+            // 如有需要，可根据连接类型添加特定逻辑。
+            // 例如，显示不同的用户界面元素或验证规则
         }
-        
+
         /// <summary>
-        /// Save button click handler - save all settings
+        /// “保存”按钮点击处理程序 - 保存所有设置
         /// </summary>
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Handle main exposure settings
+                // 手动设置主曝光
                 string exposureLogMessage = $"曝光{string.Join(",", Setting.Exposure)}修改为{ExpPattern.Text}";
                 await mediator.Send(new OperationLogCommand(exposureLogMessage));
                 Setting.Exposure = ExpPattern.Text.Trim().Split('\n').Select(int.Parse).ToArray();
-                
-                // Handle backup exposure settings
+
+                // 处理备份导出设置
                 string backupExposureLogMessage = $"备用曝光{string.Join(",", Setting.ExposureBackup)}修改为{ExpBackupPattern.Text}";
                 await mediator.Send(new OperationLogCommand(backupExposureLogMessage));
                 Setting.ExposureBackup = ExpBackupPattern.Text.Trim().Split('\n').Select(int.Parse).ToArray();
-                
-                // Handle camera type and connection value changes
+
+                // 处理相机类型和连接值的变化
                 UpdateCameraAddresses();
 
                 DialogResult = true;
@@ -157,16 +157,16 @@ namespace TrayScanStandard.View
                 MessageBox.Show($"有不合法数值，修改失败! 错误信息: {ex.Message}");
             }
         }
-        
+
         /// <summary>
-        /// Update the camera address settings based on UI selections
+        /// 根据用户界面选择更新摄像头地址设置
         /// </summary>
         private void UpdateCameraAddresses()
         {
-            // Get the connection value from the UI
+            // 从用户界面获取连接值
             string connectionValue = ConnectionValueBox.Text;
-            
-            // Create the appropriate connection address type based on the selected type
+
+            // 根据所选类型创建相应的连接地址类型。
             ConnectAddress connectAddress;
             switch (ConnectionTypeCombo.SelectedIndex)
             {
@@ -183,8 +183,8 @@ namespace TrayScanStandard.View
                     connectAddress = new Camera.Fs.Common.Key(connectionValue);
                     break;
             }
-            
-            // Set the camera address based on camera type selection
+
+            // 根据相机类型选择设置相机地址
             switch (CameraTypeCombo.SelectedIndex)
             {
                 case 0: // HikVision
@@ -196,7 +196,7 @@ namespace TrayScanStandard.View
 
                 default:
                     break;
-                // Add more camera types as needed
+                    // 根据需要添加更多类型的摄像头
             }
         }
     }

@@ -71,25 +71,11 @@ namespace TrayScanStandard.View
 
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void ComboBox_KeyUp(object sender, KeyEventArgs e)
-        {
-
-        }
-
-        private void ComboBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private async void ComboBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        private async void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             await Task.Delay(100);
             palletv.Refesh();
         }
+        
     }
 }
