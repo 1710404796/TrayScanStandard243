@@ -26,6 +26,11 @@ namespace TrayScanStandard.Models
         {
             get; set;
         } = "50005";
+
+        public string Port1
+        {
+            get; set;
+        } = "0";
         public Visibility BackGroundEnable
         {
             get;
