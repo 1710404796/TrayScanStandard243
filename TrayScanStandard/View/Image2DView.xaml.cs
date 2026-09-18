@@ -26,9 +26,6 @@ namespace TrayScanStandard.View
 
         private List<(Border, BarCodeRegionInfo)> _rois = [];
 
-
-
-
         Border _nowBorder;
 
 
@@ -87,11 +84,9 @@ namespace TrayScanStandard.View
                             };
                             img2d.ResultCanvas.Children.Add(border);
                             resultRects.Add(border);
-                        }
-                        );
+                        });
                  
                 });
-
 
             });
         }
@@ -128,10 +123,6 @@ namespace TrayScanStandard.View
            
         }
 
-        private void Capture_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
 
         private void SetCam_Click(object sender, RoutedEventArgs e)
         {
@@ -173,15 +164,32 @@ namespace TrayScanStandard.View
                 return;
             }
 
-            ViewModel.SelectBattery.Regions[ViewModel.CameraIdx - 1].Clear();
-            //_context.SaveChanges();
-            ViewModel.SelectBattery.Regions[ViewModel.CameraIdx - 1].AddRange(_rois.Select(s => s.Item2).ToList());
-            var cnt = ViewModel.LinxContext.SaveChanges();
+            try
+            {
+                var cameraIdx = ViewModel.CameraIdx;
+                if (cameraIdx < 1 || cameraIdx > ViewModel.SelectBattery.Regions.Count)
+                {
+                    MessageBox.Show($"相机索引 {cameraIdx} 超出范围 (1~{ViewModel.SelectBattery.Regions.Count})",
+                        "保存失败", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
-            MainStorage.SelectBattery = ViewModel.SelectBattery;
-            
-            // 标记已保存
-            ViewModel.MarkAsSaved();
+                var regionList = ViewModel.SelectBattery.Regions[cameraIdx - 1];
+                regionList.Clear();
+                regionList.AddRange(_rois.Select(s => s.Item2).ToList());
+
+                var cnt = ViewModel.LinxContext.SaveChanges();
+
+                MainStorage.SelectBattery = ViewModel.SelectBattery;
+
+                // 标记已保存
+                ViewModel.MarkAsSaved();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[SaveBtn] 保存ROI失败: {ex}");
+                MessageBox.Show($"保存失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -218,11 +226,7 @@ namespace TrayScanStandard.View
                 _rois.Add((border, regionInfo));
             }
 
-           
-
         }
-
-
 
         private Border CreateBorder()
         {
@@ -259,6 +263,7 @@ namespace TrayScanStandard.View
 
             return border;
         }
+
         private void Border_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             // 阻止事件冒泡到父级控件
@@ -282,11 +287,13 @@ namespace TrayScanStandard.View
                 ViewModel.RefreshBarCodeRegionData();
             }
         }
+
         private static void UpdateBorderThickness(Border border)
         {
             border.BorderThickness = new Thickness(Math.Max(border.Width, border.Height) / 100 * 3 + 6);
             (border.Child as TextBlock).FontSize = Math.Min(border.Width * 2 / 3, border.Height * 2 / 3) + 1;
         }
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             //throw new NotImplementedException();
@@ -341,42 +348,61 @@ namespace TrayScanStandard.View
                     break;
                 }
             }
-        }        private async void TopBox_TextChanged(object sender, TextChangedEventArgs e)
+        }
+        
+        private async void TopBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ViewModel.SelectBarCodeRegionInfo is null)
             {
                 return;
             }
 
-            if (_nowBorder is null)
+            var border = _nowBorder;
+            var vm = ViewModel;
+            if (border is null)
             {
                 return;
-            }   
+            }
             await Task.Delay(20);
-            _nowBorder.Margin = new Thickness(ViewModel.SelectBarCodeRegionInfo.Left, ViewModel.SelectBarCodeRegionInfo.Top, 0, 0);
+            if (_nowBorder != border || vm.SelectBarCodeRegionInfo is null)
+            {
+                return;
+            }
 
-            _nowBorder.Width = ViewModel.SelectBarCodeRegionInfo.Width;
-            _nowBorder.Height = ViewModel.SelectBarCodeRegionInfo.Height;
-            UpdateBorderThickness(_nowBorder);
-            
+            border.Margin = new Thickness(vm.SelectBarCodeRegionInfo.Left, vm.SelectBarCodeRegionInfo.Top, 0, 0);
+            border.Width = vm.SelectBarCodeRegionInfo.Width;
+            border.Height = vm.SelectBarCodeRegionInfo.Height;
+            UpdateBorderThickness(border);
+
             // 标记有未保存的修改
-            ViewModel.MarkAsChanged();
-        }        private async void ChannelBox_TextChanged(object sender, TextChangedEventArgs e)
+            vm.MarkAsChanged();
+        }
+
+        private async void ChannelBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ViewModel.SelectBarCodeRegionInfo is null)
             {
                 return;
             }
-            if (_nowBorder is null)
+            var border = _nowBorder;
+            var vm = ViewModel;
+            if (border is null)
             {
                 return;
             }
             await Task.Delay(20);
-            (_nowBorder.Child as TextBlock).Text = ViewModel.SelectBarCodeRegionInfo.ChannelIdx.ToString();
-            
+            if (_nowBorder != border || vm.SelectBarCodeRegionInfo is null)
+            {
+                return;
+            }
+
+            (border.Child as TextBlock).Text = vm.SelectBarCodeRegionInfo.ChannelIdx.ToString();
+
             // 标记有未保存的修改
-            ViewModel.MarkAsChanged();
-        }private void Delete_Border_Click(object sender, RoutedEventArgs e)
+            vm.MarkAsChanged();
+        }
+
+        private void Delete_Border_Click(object sender, RoutedEventArgs e)
         {
             DeleteBorder(_nowBorder);
             _nowBorder = null!;
@@ -448,35 +474,38 @@ namespace TrayScanStandard.View
                 ViewModel.MarkAsSaved(); // 标记为已保存，避免重复提示
                 // 如果选择No，则不保存，直接离开
             }
-            img2d.Source = null!;
-            img2d.BorderCanvas.Children.Clear();
-            img2d.ResultCanvas.Children.Clear();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
 
-
-            //foreach (var item in _rois)
-            //{
-            //    DeleteBorder(item.Item1);
-            //}
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
-            _rois.Clear();
-            _nowBorder = null!;
-
+            // 先取消 ViewModel 事件订阅，防止后续事件访问已清理的控件
             ViewModel.ColorUpdate -= ViewModel_ColorUpdate;
             ViewModel.ResultUpdate -= ViewModel_ResultUpdate;
-        }
-        private void Clear_Click(object sender, RoutedEventArgs e)
-        {
-            //MainStorage.Saves.ScanRatios[ViewModel.CameraIdx - 1].OkCnt = MainStorage.Saves.ScanRatios[ViewModel.CameraIdx - 1].ScanCnt = 0;
-            //ViewModel.UpdateRatio();
+
+            img2d.Source = null!;
+
+            foreach (var (border, _) in _rois)
+            {
+                if (border != null)
+                {
+                    border.MouseRightButtonDown -= Border_MouseRightButtonDown;
+                    border.MouseRightButtonUp -= Border_MouseRightButtonUp;
+                    border.MouseLeftButtonDown -= Border_MouseLeftButtonDown;
+                }
+            }
+            img2d.BorderCanvas.Children.Clear();
+            img2d.ResultCanvas.Children.Clear();
+
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+            _nowBorder = null!;
+            _rois.Clear();
+            resultRects.Clear();
+            codes.Clear();
         }
 
-        private void Capture_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
+        //private void Clear_Click(object sender, RoutedEventArgs e)
+        //{
+        //    MainStorage.Saves.ScanRatios[ViewModel.CameraIdx - 1].OkCnt = MainStorage.Saves.ScanRatios[ViewModel.CameraIdx - 1].ScanCnt = 0;
+        //    ViewModel.UpdateRatio();
+        //}
 
         private async void AutoRoi_Click(object sender, RoutedEventArgs e)
         {
@@ -498,7 +527,9 @@ namespace TrayScanStandard.View
             }
             await ViewModel.AutoSortROI();
             RefreshBorder();
-        }        private void ApplyBatchSize_Click(object sender, RoutedEventArgs e)
+        }
+
+        private void ApplyBatchSize_Click(object sender, RoutedEventArgs e)
         {
             // 批量应用宽高到所有边框
             foreach (var (border, regionInfo) in _rois)

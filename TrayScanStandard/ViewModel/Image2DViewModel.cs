@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using LinxUniverse.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Brushes1 = System.Drawing.Brushes;
 using Bitmap = System.Drawing.Bitmap;
@@ -91,7 +92,7 @@ namespace TrayScanStandard.ViewModel
         [ObservableProperty]
         int _roiPadding = 100;
 
-        public int CameraIdx { get; set; } = 0;
+        public int CameraIdx { get; set; } = 2;
 
         public CameraSetting CameraSetting
         {
@@ -225,22 +226,38 @@ namespace TrayScanStandard.ViewModel
         [RelayCommand]
         public async Task Detect()
         {
-            var data = await _mediator.Send(new DetectCodeCommand([new ROIDetectParam(tempImg, 
+            ImmutableArray<ROIDetectParam> detectParams = [new ROIDetectParam(tempImg,
                 SelectBattery?.Regions[CameraIdx - 1]
                 .Map(s => s.ToROI())
-                .ToArray() ?? [])])
-                );
+                .ToArray() ?? [])];
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var data = await _mediator.Send(new DetectCodeCommand(detectParams));
             data.Match(
                 Right: r =>
                 {
                     // 绘制到图上？
 
-                    _logger.LogInformation(r.ToArr().ToString());
+                    // _logger.LogInformation(r.ToArr().ToString());
+                    // _logger.LogInformation(string.Join("; ", r.SelectMany(s => s.Codes).Select(c => $"通道{c.Index}: {c.Code}")));
+                    sw.Stop();
+                    var codes = r.SelectMany(s => s.Codes).ToArray();
+                    var total = detectParams.Sum(p => p.ROIS.Length);
+                    var success = codes.Length;
+                    var failed = total - success;
+                    var successfulChannels = codes.Select(c => c.Index).ToHashSet();
+                    var failedChannels = detectParams
+                        .SelectMany(p => p.ROIS)
+                        .Select(roi => roi.Index)
+                        .Where(channel => !successfulChannels.Contains(channel))
+                        .Distinct()
+                        .ToArray();
+                    _logger.LogInformation($"本次任务结果: 总条码{total}个, 解码成功{success}个, 未解码成功{failed}个, 未解码成功通道[{string.Join(",", failedChannels)}], 本次耗时{sw.Elapsed.TotalMilliseconds:F0}ms");
 
 
                 },
                 Left: l =>
                 {
+                    sw.Stop();
                     _mediator.Send (new WarningBoxCommand(l)).Wait();
 
                 },

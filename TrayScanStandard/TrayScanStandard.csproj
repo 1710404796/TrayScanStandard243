@@ -30,6 +30,7 @@
     <Content Include="catl.ico" />
   </ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="MediatR" Version="12.2.0" />
 		<PackageReference Include="Humanizer.Core.zh-CN" Version="2.14.1" />

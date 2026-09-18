@@ -27,7 +27,7 @@
     ></TextBlock>
             <DatePicker SelectedDate="{Binding ViewModel.EndTime}" Margin="10,0,0,0"></DatePicker>
 
-            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
+            <!--<TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
            Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
                        
                 Text="{x:Static lang:Resources.TrayBarcode}"
@@ -36,18 +36,7 @@
             <TextBox Width="150" Margin="10,0,0,0" Text="{Binding ViewModel.Code}"
                      VerticalContentAlignment="Center"
                      
-                     ></TextBox>
-
-            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
-           Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
-                       
-                Text="显示条目"
-                       
-></TextBlock>
-            <TextBox Width="150" Margin="10,0,0,0" Text="{Binding ViewModel.LogNum}"
-                     VerticalContentAlignment="Center"
-                     
-                     ></TextBox>
+                     ></TextBox>-->
 
             <Button Content="{x:Static lang:Resources.DeriveCVS}" Margin="10,0,0,0"
 Command="{Binding ViewModel.ExportCommand}"/>
@@ -64,10 +53,10 @@ Command="{Binding ViewModel.ExportAllCommand}"/>
 >
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Header="{x:Static lang:Resources.Check}" Binding="{Binding IsSelect}" IsReadOnly="False"></DataGridCheckBoxColumn>
-                <DataGridTextColumn Header="{x:Static lang:Resources.TrayBarcode}" Binding="{Binding PalletCode}" ></DataGridTextColumn>
-                <DataGridTextColumn Header="{x:Static lang:Resources.AssemblyTime}" Binding="{Binding ZuPanTime}"></DataGridTextColumn>
-                <DataGridTextColumn Header="{x:Static lang:Resources.ChannelCount}" Binding="{Binding ChannelCount}"></DataGridTextColumn>
-                <DataGridTextColumn Header="识别条码数" Binding="{Binding RealCount}"></DataGridTextColumn>
+                <!--<DataGridTextColumn Header="{x:Static lang:Resources.TrayBarcode}" Binding="{Binding PalletCode}" ></DataGridTextColumn>-->
+                <DataGridTextColumn Header="扫码时间" Binding="{Binding ZuPanTime}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="{x:Static lang:Resources.ChannelCount}" Binding="{Binding ChannelCount}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="识别条码数" Binding="{Binding RealCount}" IsReadOnly="True"></DataGridTextColumn>
                 <!--<DataGridTextColumn Header="托盘信息" Binding="{Binding }" ></DataGridTextColumn>-->
                 <DataGridTemplateColumn Header="{x:Static lang:Resources.TrayInformation}">
                     <DataGridTemplateColumn.CellTemplate>

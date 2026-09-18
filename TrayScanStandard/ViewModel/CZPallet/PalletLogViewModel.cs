@@ -24,15 +24,10 @@ namespace TrayScanStandard.ViewModel.CZPallet
         public DateTime EndTime { get; set; } = DateTime.Today.AddDays(1);
 
         public string Code { get; set; } = string.Empty;
-        public int LogNum { get; set; } = 100;
 
 
         public void RefreshContext()
         {
-            _logs = context
-                .PalletLogs.AsNoTracking()
-                .OrderByDescending(s => s.Id)
-                .Where(s => s.PalletType == PalletType.组盘).Take(LogNum).ToArray();
             Search();
         }
 
@@ -98,7 +93,7 @@ namespace TrayScanStandard.ViewModel.CZPallet
             }
 
             PalletLogs = new(
-                 afterFilter.Take(LogNum).Select(s => new PalletLogExt(s))
+                 afterFilter.Select(s => new PalletLogExt(s))
              );
         }
     }
