@@ -31,7 +31,7 @@ namespace TrayScanStandard.Apis
             }
             logger.LogInformation("收到检测任务");
 
-            if (MainStorage.SelectBattery is null) return new QRCodeResult() { ErrorCode = ErrorType.SomeResultError };
+            if (MainStorage.SelectBattery is null) return new QRCodeResult() { ErrorCode = ErrorType.ERROR };
 
             var data = await mediator.Send(new DetectCCDCommand(MainStorage.SelectBattery));
             GC.Collect();
@@ -52,7 +52,7 @@ namespace TrayScanStandard.Apis
                             = batteryCodes.Map(s => new BatteryInfo
                             {
                                 BatteryCode = s,
-                                BatteryLevel = string.IsNullOrEmpty(s) ? Models.BatteryLevel.EMPTY : Models.BatteryLevel.OK
+                                BatteryLevel = string.IsNullOrEmpty(s) ? Models.BatteryLevel.ERROR : Models.BatteryLevel.OK
                             })
                             .ToList()
 
@@ -91,7 +91,7 @@ namespace TrayScanStandard.Apis
     {
         Successed,
         CameraError,
-        //ERROR,
+        ERROR,
         SomeResultError,
     }
 
