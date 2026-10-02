@@ -22,8 +22,10 @@ namespace TrayScanStandard.Apis
         //[HttpGet("/CaptureImage")] 北京时代
         //[HttpPost("/Photo")] 福鼎时代
         private const string ERROR = "ERROR";
-        [HttpPost("/CaptureImage/{port1}")]
-        public async Task<QRCodeResult> Delect(string port1)
+        //[HttpPost("/CaptureImage/{port1}")]厦门时代
+        [HttpPost("/CaptureImage")]
+        // public async Task<QRCodeResult> Delect(string port1) 厦门时代
+        public async Task<QRCodeResult> Delect()
         {
             while (!mainViewModel.IsWcsEnable)
             {
