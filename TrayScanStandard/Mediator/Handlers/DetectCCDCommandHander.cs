@@ -197,13 +197,29 @@ namespace TrayScanStandard.Mediator.Handlers
             // 清空一下？
             imageDisplayViewModel.XYLStation.ClearStage();
             logger.LogInformation("清空数据，推送新数据");
-            //Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
-            res1.Iter(s =>
-                s.Channels.Iter
-                    (async c => await imageDisplayViewModel.XYLStation.BindBattery(c.Index - 1, c.Code, true, Models.BatteryLevel.OK)
-                    )
-             );
-            //));
+            const string errorCode = "ERROR";
+            var decodedCodes = res1.Match(
+                Right: result => result.Channels.ToDictionary(channel => channel.Index, channel => channel.Code),
+                Left: _ => new Dictionary<int, string>());
+
+            for (var channelIndex = 1; channelIndex <= request.BatteryTypeInfo.Count; channelIndex++)
+            {
+                var code = decodedCodes.GetValueOrDefault(channelIndex);
+                if (string.IsNullOrWhiteSpace(code))
+                {
+                    code = errorCode;
+                }
+
+                var batteryLevel = code == errorCode
+                    ? Models.BatteryLevel.ERROR
+                    : Models.BatteryLevel.OK;
+                await imageDisplayViewModel.XYLStation.BindBattery(
+                    channelIndex - 1,
+                    code,
+                    true,
+                    batteryLevel);
+            }
+
             logger.LogInformation("返回数据");
             foreach (var item in scanCameraService.Image2DViewModels)
             {
