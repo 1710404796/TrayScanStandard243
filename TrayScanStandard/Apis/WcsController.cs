@@ -22,6 +22,8 @@ namespace TrayScanStandard.Apis
         //[HttpGet("/CaptureImage")] 北京时代
         //[HttpPost("/Photo")] 福鼎时代
         private const string ERROR = "ERROR";
+        private static readonly TimeSpan Rephotograph = TimeSpan.FromSeconds(3);
+
         [HttpPost("/CaptureImage/{port1}")]
         public async Task<QRCodeResult> Delect(string port1)
         {
@@ -33,21 +35,40 @@ namespace TrayScanStandard.Apis
 
             if (MainStorage.SelectBattery is null) return new QRCodeResult() { ErrorCode = ErrorType.ERROR };
 
-            var data = await mediator.Send(new DetectCCDCommand(MainStorage.SelectBattery));
+            var batteryTypeInfo = MainStorage.SelectBattery;
+            var cancellationToken = HttpContext.RequestAborted;
+            var data = await mediator.Send(new DetectCCDCommand(batteryTypeInfo), cancellationToken);
+
+            var decodedCount = data.Match(
+                Right: result => result.Channels.Count(code =>
+                    !string.IsNullOrWhiteSpace(code.Code) && code.Code != ERROR),
+                Left: _ => batteryTypeInfo.Count);
+
+            if (decodedCount < batteryTypeInfo.Count)
+            {
+                logger.LogInformation(
+                    "本次解码数量为 {DecodedCount}/{ExpectedCount}，3秒后重新拍照并上传WCS",
+                    decodedCount,
+                    batteryTypeInfo.Count);
+
+                await Task.Delay(Rephotograph, cancellationToken);
+                data = await mediator.Send(new DetectCCDCommand(batteryTypeInfo), cancellationToken);
+            }
+
             GC.Collect();
             data.IfRight(
                 r =>
                 {
                     var codes = r.Channels.ToDictionary(s => s.Index, s => s.Code);
-                    var batteryCodes = Enumerable.Range(1, MainStorage.SelectBattery.Count)
+                    var batteryCodes = Enumerable.Range(1, batteryTypeInfo.Count)
                         .Select(s => codes.GetValueOrDefault(s, ERROR))
                         .ToList();
                     var log = new PalletLog
                     {
-                        Column = MainStorage.SelectBattery.Column, // 这里要可派之
+                        Column = batteryTypeInfo.Column, // 这里要可派之
                         PalletType = Models.CZPallet.PalletType.组盘,
 
-                        ChannelCount = MainStorage.SelectBattery.Count,
+                        ChannelCount = batteryTypeInfo.Count,
                         BatteryInfo
                             = batteryCodes.Map(s => new BatteryInfo
                             {
@@ -67,7 +88,7 @@ namespace TrayScanStandard.Apis
                 Right: r =>
                 {
                     var codes = r.Channels.ToDictionary(s => s.Index, s => s.Code);
-                    var batteryCodes = Enumerable.Range(1, MainStorage.SelectBattery.Count)
+                    var batteryCodes = Enumerable.Range(1, batteryTypeInfo.Count)
                         .Select(s => codes.GetValueOrDefault(s, ERROR))
                         .ToList(); // Todo: 如何简化
                     return new QRCodeResult()
