@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CommunityToolkit.Mvvm.ComponentModel;
+using TrayScanStandard.Attritubes;
 using TrayScanStandard.View.CZPallet;
 using TrayScanStandard.View.User;
 using TrayScanStandard.ViewModel;
@@ -22,6 +23,7 @@ namespace TrayScanStandard.View
     /// <summary>
     /// SettingView.xaml 的交互逻辑
     /// </summary>
+    [PowerView(PowerEnum.程序参数设定)]
     public partial class SettingView : Page
     {
 

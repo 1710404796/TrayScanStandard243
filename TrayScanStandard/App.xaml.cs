@@ -124,7 +124,7 @@ namespace TrayScanStandard
                          services.AddSingleton<SettingViewModel>();
                          services.AddTransient<SettingView>();
 
-                         services.AddSingleton<UserManagerViewModel>();
+                         services.AddTransient<UserManagerViewModel>();
                          services.AddTransient<UserManagerView>();
 
                          services.AddSingleton<BatteryManagerViewModel>();

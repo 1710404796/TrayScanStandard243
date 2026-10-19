@@ -5,7 +5,7 @@ using TrayScanStandard.Attritubes;
 
 namespace TrayScanStandard.ViewModel.CZPallet
 {
-    [PowerView(PowerEnum.报警日志)]
+    // [PowerView(PowerEnum.报警日志)]
     public partial class WarningLogView : Page
     {
         public WarningLogViewModel ViewModel { get; }

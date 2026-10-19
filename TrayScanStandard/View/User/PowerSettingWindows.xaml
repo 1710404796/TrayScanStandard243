@@ -9,25 +9,26 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         WindowStartupLocation="CenterScreen"
-        Title="权限设定页面" SizeToContent="Height" Width="700"
-        Loaded="PowerSettingWindows_OnLoaded"
-        >
+        Title="权限设定页面" Height="650" Width="700"
+        Loaded="PowerSettingWindows_OnLoaded">
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <StackPanel x:Name="PowerPanel" Margin="0,0,0,30">
-            <TextBlock
-                HorizontalAlignment="Center" 
-                Margin="0,20,0,20"
-                Text="{x:Static lang:Resources.PermissionsSetting}"
-                
-                FontSize="20"></TextBlock>
-        </StackPanel>
+        <ScrollViewer Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="PowerPanel" Margin="0,0,0,30">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Margin="0,20,0,20"
+                    Text="{x:Static lang:Resources.PermissionsSetting}"
+                    FontSize="20"/>
+            </StackPanel>
+        </ScrollViewer>
         <Button Grid.Row="1"
                 Content="{x:Static lang:Resources.Save}"
-                
                 HorizontalAlignment="Center" Width="100" Click="ButtonBase_OnClick">
         </Button>
     </Grid>

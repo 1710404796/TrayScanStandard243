@@ -18,7 +18,7 @@ namespace TrayScanStandard.View
     /// <summary>
     /// Image2DView.xaml 的交互逻辑
     /// </summary>
-    [PowerView(PowerEnum.扫码枪设置)]
+    [PowerView(PowerEnum.相机参数设置)]
     public partial class Image2DView : UserControl
     {
 

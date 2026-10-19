@@ -139,7 +139,7 @@ Source="/Images/catl1.png" HorizontalAlignment="Center"></Image>-->
                          Cursor="Hand"
                          x:Name="ZPALgo"
                          Click="ZPALgo_Click">
-                组盘扫码日志
+                扫码日志
             </RadioButton>
 
             <!--电芯种类管理-->

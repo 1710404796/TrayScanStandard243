@@ -28,7 +28,9 @@ namespace TrayScanStandard.ViewModel
         [ObservableProperty]
         private RoleEnum _selectedRole = RoleEnum.操作员;
 
-        public List<RoleEnum> RoleList { get; } = Enum.GetValues<RoleEnum>().SkipLast(1).ToList();
+        public List<RoleEnum> RoleList { get; } = Enum.GetValues<RoleEnum>()
+            .Where(role => role != RoleEnum.SuperAdmin)
+            .ToList();
 
         public UserManagerViewModel(UserManager<LinxUser> userManager)
         {
@@ -148,28 +150,55 @@ namespace TrayScanStandard.ViewModel
             int fail = 0;
             var errors = new List<string>();
             var existingUsers = (await _userManager.GetAllUserAsync()).ToArray();
+            var existingNames = existingUsers
+                .Select(user => user.UserName)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var existingRfids = existingUsers
+                .Select(user => user.Password)
+                .ToHashSet(StringComparer.Ordinal);
 
             foreach (var (userName, rfid) in rows)
             {
                 try
                 {
-                    if (existingUsers.Any(u => u.UserName == userName))
+                    var normalizedUserName = userName.Trim();
+                    var normalizedRfid = rfid.Trim();
+
+                    if (existingNames.Contains(normalizedUserName))
                     {
                         // 将已存在的用户计为跳过
                         skipped++;
                         continue;
                     }
 
-                    var user = new LinxUser { UserName = userName, Password = rfid };
-                    await _userManager.CreateAsync(user);
-                    await _userManager.AddToRoleAsync(user, SelectedRole.ToString());
+                    if (existingRfids.Contains(normalizedRfid))
+                    {
+                        skipped++;
+                        continue;
+                    }
+
+                    var user = new LinxUser
+                    {
+                        UserName = normalizedUserName,
+                        Password = normalizedRfid
+                    };
+                    var result = await _userManager.CreateWithRoleAsync(user, SelectedRole.ToString());
+                    if (!result.IsSuccess)
+                    {
+                        fail++;
+                        errors.Add($"导入失败 [{normalizedUserName}]: {result.Message}");
+                        continue;
+                    }
+
                     Users.Add(new AdvUser { LinxUser = user, Role = SelectedRole });
+                    existingNames.Add(normalizedUserName);
+                    existingRfids.Add(normalizedRfid);
                     success++;
                 }
                 catch (Exception ex)
                 {
                     fail++;
-                    errors.Add($"导入失败 [{userName}]: {ex.Message}");
+                    errors.Add($"导入失败 [{userName.Trim()}]: {ex.Message}");
                 }
             }
 
@@ -181,8 +210,10 @@ namespace TrayScanStandard.ViewModel
     public class AdvUser
     {
         public LinxUser LinxUser { get; set; }
-        public string RoleName => Utils.Utils.GetRoleName(Role);
-        public RoleEnum Role { get; set; }
+        public RoleEnum? Role { get; set; }
+        public string RoleName => RoleDisplayOverride
+            ?? (Role.HasValue ? Utils.Utils.GetRoleName(Role.Value) : "未分配角色");
+        public string? RoleDisplayOverride { get; set; }
         public string PassStar => LinxUser.Password.Truncate(5, "****", Truncator.FixedLength);
 
     }

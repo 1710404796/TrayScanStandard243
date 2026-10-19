@@ -23,7 +23,7 @@ namespace TrayScanStandard.View
     /// <summary>
     /// DataDisplayView.xaml 的交互逻辑
     /// </summary>
-    [PowerView(PowerEnum.电芯计数)]
+    // [PowerView(PowerEnum.电芯计数)]
     public partial class DataDisplayView : Page
     {
 

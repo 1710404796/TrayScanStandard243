@@ -16,7 +16,9 @@ namespace TrayScanStandard.View.User
         public AddUser()
         {
             DataContext = this;
-            RoleEnumList = Enum.GetValues<RoleEnum>().SkipLast(1);
+            RoleEnumList = Enum.GetValues<RoleEnum>()
+                .Where(role => role != RoleEnum.SuperAdmin)
+                .ToList();
             RoleList = RoleEnumList.Select(Utils.Utils.GetRoleName);
             InitializeComponent();
         }
@@ -33,7 +35,15 @@ namespace TrayScanStandard.View.User
             ComboBox comboBox;
             UserName = UName.Text;
             RFID = mm.Password.ToString();
+            if (MType.SelectedIndex < 0)
+            {
+                MessageBox.Show("请选择用户角色");
+                return;
+            }
+
             RoleEnum = RoleEnumList.ElementAt(MType.SelectedIndex);
+            UserName = UserName.Trim();
+            RFID = RFID.Trim();
             if (UserName == null || UserName == "")
             {
                 MessageBox.Show("用户名不能为空");

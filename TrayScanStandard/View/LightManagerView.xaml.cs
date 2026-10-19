@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TrayScanStandard.Attritubes;
 using TrayScanStandard.ViewModel;
 
 namespace TrayScanStandard.View
@@ -19,6 +20,7 @@ namespace TrayScanStandard.View
     /// <summary>
     /// LightManagerView.xaml 的交互逻辑
     /// </summary>
+    [PowerView(PowerEnum.光源管理)]
     public partial class LightManagerView : Page
     {
         public LightManagerViewModel ViewModel

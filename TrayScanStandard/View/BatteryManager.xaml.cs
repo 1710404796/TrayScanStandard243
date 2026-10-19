@@ -8,7 +8,7 @@ using TrayScanStandard.ViewModel;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace TrayScanStandard.View;
-[PowerView(PowerEnum.电芯信息管理)] // 迁移回主模板
+[PowerView(PowerEnum.电芯种类管理)] 
 public partial class BatteryManager : Page
 {
     public BatteryManagerViewModel ViewModel { get; }

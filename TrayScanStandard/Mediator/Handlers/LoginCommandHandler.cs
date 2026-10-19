@@ -33,15 +33,27 @@ namespace TrayScanStandard.Mediator.Handlers
             }
 
 
-            var users = await userManager.GetAllUserAsync();
-            var user = users.FirstOrDefault(u => u.Password == request.userId);
+            var cardId = request.userId?.Trim();
+            if (string.IsNullOrWhiteSpace(cardId))
+            {
+                MessageBox.Show("RFID不能为空。", "登录失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            var user = await userManager.FindByPasswordAsync(cardId);
             if (user == null)
             {
                 MessageBox.Show("用户不存在，请检查输入的ID卡号是否正确。", "登录失败", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+
             var roles = await userManager.GetUserRolesAsync(user);
-            string role = roles.First();
+            var role = roles.FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                MessageBox.Show("该用户尚未分配角色，请联系管理员。", "登录失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
 
 
             var aa = new ClaimsPrincipal(new ClaimsIdentity("login"));

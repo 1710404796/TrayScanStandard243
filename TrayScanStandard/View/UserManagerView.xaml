@@ -70,7 +70,7 @@
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{x:Static lang:Resources.Username}" Width="150"  Binding="{Binding LinxUser.UserName, UpdateSourceTrigger=PropertyChanged}"></DataGridTextColumn>
-                    <DataGridTextColumn Header="{x:Static lang:Resources.Identity}" Width="150"  Binding="{Binding Role, UpdateSourceTrigger=PropertyChanged}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="{x:Static lang:Resources.Identity}" Width="150"  Binding="{Binding RoleName}"></DataGridTextColumn>
                     <DataGridTextColumn Header="RFID" IsReadOnly="True" Width="150"  Binding="{Binding PassStar}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>

@@ -5,7 +5,7 @@ using TrayScanStandard.Attritubes;
 
 namespace TrayScanStandard.ViewModel.CZPallet
 {
-    [PowerView(PowerEnum.WCS交互日志)]
+    // [PowerView(PowerEnum.WCS交互日志)]
 
     public partial class WCSLogView : Page
     {

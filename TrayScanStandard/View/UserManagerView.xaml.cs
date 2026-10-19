@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Humanizer;
 using LinxUniverse.Auth;
 using TrayScanStandard.Attritubes;
 using TrayScanStandard.View.User;
@@ -54,13 +53,19 @@ namespace TrayScanStandard.View
 
             if (newUser.ShowDialog() ?? false)
             {
-                LinxUser user = new LinxUser
+                var user = new LinxUser
                 {
-                    Password = newUser.RFID,
-                    UserName = newUser.UserName,
+                    Password = newUser.RFID.Trim(),
+                    UserName = newUser.UserName.Trim(),
                 };
-                await _userManager.CreateAsync(user);
-                await _userManager.AddToRoleAsync(user, newUser.RoleEnum.ToString());
+
+                var result = await _userManager.CreateWithRoleAsync(user, newUser.RoleEnum.ToString());
+                if (!result.IsSuccess)
+                {
+                    MessageBox.Show(result.Message, "添加用户失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
                 ViewModel.Users.Add(new AdvUser { LinxUser = user, Role = newUser.RoleEnum });
             }
         }
@@ -71,8 +76,15 @@ namespace TrayScanStandard.View
             if (advuser != null)
             {
 
-                await _userManager.DeleteAsync(advuser.LinxUser);
-                ViewModel.Users.Remove(advuser);
+                var result = await _userManager.DeleteAsync(advuser.LinxUser);
+                if (result.IsSuccess)
+                {
+                    ViewModel.Users.Remove(advuser);
+                }
+                else
+                {
+                    MessageBox.Show(result.Message, "删除用户失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
 
 
@@ -90,25 +102,42 @@ namespace TrayScanStandard.View
             List<AdvUser> advUsers = [];
             foreach (LinxUser user in enumerable)
             {
+                string? roleName;
                 try
                 {
-                    var aa = (await _userManager.GetUserRolesAsync(user)).First().DehumanizeTo<RoleEnum>();
-
+                    roleName = (await _userManager.GetUserRolesAsync(user)).FirstOrDefault();
+                }
+                catch
+                {
                     advUsers.Add(new AdvUser
                     {
                         LinxUser = user,
-                        Role = aa
+                        RoleDisplayOverride = "读取角色失败"
+                    });
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(roleName)
+                    && Enum.TryParse<RoleEnum>(roleName, ignoreCase: true, out var role)
+                    && Enum.IsDefined(typeof(RoleEnum), role))
+                {
+                    advUsers.Add(new AdvUser
+                    {
+                        LinxUser = user,
+                        Role = role
                     });
                 }
-
-                catch
+                else
                 {
-                    // 删除用户
-                    await _userManager.DeleteAsync(user);
+                    advUsers.Add(new AdvUser
+                    {
+                        LinxUser = user,
+                        RoleDisplayOverride = string.IsNullOrWhiteSpace(roleName)
+                            ? "未分配角色"
+                            : roleName
+                    });
                 }
-
             }
-            ;
 
             ViewModel.Users = new(advUsers);
         }

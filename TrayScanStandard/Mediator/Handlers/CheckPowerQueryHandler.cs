@@ -17,21 +17,30 @@ namespace TrayScanStandard.Mediator.Handlers
     {
         public async Task<bool> Handle(CheckPowerQuery request, CancellationToken cancellationToken)
         {
-            string aa = (await authenticationStateProvider.GetAuthenticationStateAsync()).User.GetUserRole();
+            string? roleName = (await authenticationStateProvider.GetAuthenticationStateAsync()).User.GetUserRole();
 
-            if (aa == "admin") return true;
-
-            RoleEnum roleEnum = aa.DehumanizeTo<RoleEnum>();
-
-            if (roleEnum == RoleEnum.SuperAdmin || (MainStorage.Saves.PowerTable.ContainsKey(request.PowerEnum) &&
-                MainStorage.Saves.PowerTable[request.PowerEnum][roleEnum]))
+            if (string.Equals(roleName, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
-            else
+
+            if (!Enum.TryParse(roleName, ignoreCase: true, out RoleEnum roleEnum)
+                || !Enum.IsDefined(typeof(RoleEnum), roleEnum))
             {
                 return false;
             }
+
+            if (roleEnum == RoleEnum.SuperAdmin)
+            {
+                return true;
+            }
+
+            if (!MainStorage.Saves.PowerTable.TryGetValue(request.PowerEnum, out var roleMap))
+            {
+                return false;
+            }
+
+            return roleMap.TryGetValue(roleEnum, out var granted) && granted;
         }
     }
 }
